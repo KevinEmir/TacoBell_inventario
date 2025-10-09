@@ -1,35 +1,224 @@
 <!doctype html>
 <html lang="es">
-  <head>
+<head>
     <meta charset="utf-8">
-    <title>Inventario - Pasantía</title>
+    <title>Inventario - Taco Bell</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  </head>
-  <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-      <div class="container">
-        <a class="navbar-brand" href="/">Inventario</a>
-        <div class="collapse navbar-collapse">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item"><a class="nav-link" href="/categorias/">Categorías</a></li>
-          </ul>
+
+    <!-- Icono del sitio -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/tacobell_logo.png') }}">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: #000; /* Fondo negro */
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #F8F8F8;
+        }
+
+        header {
+            background-color: #702082; /* Morado Taco Bell */
+            text-align: center;
+            padding: 15px 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+        }
+
+        header img {
+            height: 70px;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #4b006e;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: #bbb;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            color: #ffffff; /* Blanco brillante al pasar el mouse */
+        }
+
+        .navbar-brand {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        /* Botones */
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            border: none;
+        }
+
+        .btn-add {
+            background-color: #702082;
+            color: #fff;
+        }
+
+        .btn-add:hover {
+            background-color: #9b4bcc;
+            color: #fff;
+        }
+
+        .btn-edit {
+            background-color: #ff8c00;
+            color: #fff;
+        }
+
+        .btn-delete {
+            background-color: #d7263d;
+            color: #fff;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        /* Tabla */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px auto;
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        th {
+            background-color: #702082;
+            color: #F8F8F8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            vertical-align: middle;
+            word-break: break-word;
+        }
+
+        main {
+            min-height: calc(100vh - 120px);
+            padding: 40px;
+            width: 100%;
+            background-color: #000;
+        }
+
+        /* Alertas */
+        .alert {
+            width: 80%;
+            margin: 20px auto;
+        }
+
+    </style>
+    <style>
+/* --- NAVBAR TACO BELL --- */
+.navbar {
+    background-color: #1A1A1A;
+    padding: 10px 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar-brand {
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 1.2em;
+    text-decoration: none;
+}
+
+.navbar-links a {
+    color: #CCCCCC;
+    margin-left: 20px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.navbar-links a:hover {
+    color: #FFFFFF; /* Blanco más brillante */
+    text-shadow: 0 0 8px rgba(255,255,255,0.7);
+}
+
+/* --- Botones principales --- */
+.btn-add {
+    background-color: #702082;
+    color: white;
+}
+
+.btn-add:hover {
+    background-color: #9b42c1;
+    color: #fff;
+}
+
+/* --- Fondo general --- */
+body {
+    background-color: #000;
+    color: #F8F8F8;
+}
+</style>
+
+</head>
+
+<body>
+
+    <!-- Logo -->
+    <header>
+        <img src="{{ url_for('static', filename='img/tacobell_logo.png') }}" alt="Taco Bell">
+    </header>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <span class="navbar-brand">🌮 Inventario</span>
+        <div class="navbar-links">
+            <a href="{{ url_for('categorias.lista') }}">Categorías</a>
         </div>
-      </div>
     </nav>
-    <main class="container">
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-              {{ message }}
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
-      {% block content %}{% endblock %}
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
     </main>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+</body>
 </html>
