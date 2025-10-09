@@ -4,8 +4,7 @@ import os
 # Ejemplo de URI para SQL Server:
 # mssql+pyodbc://USER:PASSWORD@SERVER/DATABASE?driver=ODBC+Driver+17+for+SQL+Server
 
-DATABASE_URL = "mssql+pyodbc://@localhost/InventarioTacoBell?driver=ODBC+Driver+17+for+SQL+Server&Trusted_Connection=yes"
-
+DATABASE_URL = "mssql+pyodbc://@localhost/InventarioRestaurante?driver=ODBC+Driver+17+for+SQL+Server&Trusted_Connection=yes"
 
 
 
