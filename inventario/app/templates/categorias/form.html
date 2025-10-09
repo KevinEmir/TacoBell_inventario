@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ accion }} Categoría</h2>
+<form method="post">
+  <div class="mb-3">
+    <label class="form-label">Nombre</label>
+    <input name="nombre" class="form-control" value="{{ categoria.Nombre if categoria.Nombre is defined else (categoria.Nombre if categoria else '') }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Descripción</label>
+    <textarea name="descripcion" class="form-control" rows="3">{{ categoria.Descripcion if categoria.Descripcion is defined else (categoria.Descripcion if categoria else '') }}</textarea>
+  </div>
+  <button class="btn btn-primary" type="submit">{{ accion }}</button>
+  <a class="btn btn-secondary" href="{{ url_for('categorias.lista') }}">Cancelar</a>
+</form>
+{% endblock %}
