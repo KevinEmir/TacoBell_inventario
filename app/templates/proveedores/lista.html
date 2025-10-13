@@ -1,0 +1,53 @@
+{# app/templates/proveedores/lista.html #}
+{% extends 'base.html' %}
+
+{% block title %}Proveedores{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1>Proveedores</h1>
+
+  <form method="get" class="mb-3">
+    <div class="input-group">
+      <input type="text" name="q" class="form-control" placeholder="Buscar por nombre..." value="{{ q }}">
+      <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+    </div>
+  </form>
+
+  <a href="{{ url_for('proveedores.nuevo') }}" class="btn btn-primary mb-3">Nuevo proveedor</a>
+
+  {% if proveedores %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Contacto</th>
+        <th>Teléfono</th>
+        <th>Email</th>
+        <th>Activo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in proveedores %}
+      <tr>
+        <td>{{ p.nombre }}</td>
+        <td>{{ p.contacto or '-' }}</td>
+        <td>{{ p.telefono or '-' }}</td>
+        <td>{{ p.email or '-' }}</td>
+        <td>{{ 'Sí' if p.activo else 'No' }}</td>
+        <td>
+          <a href="{{ url_for('proveedores.editar', proveedor_id=p.id) }}" class="btn btn-sm btn-secondary">Editar</a>
+          <form action="{{ url_for('proveedores.eliminar', proveedor_id=p.id) }}" method="post" style="display:inline-block" onsubmit="return confirm('¿Desactivar proveedor?');">
+            <button class="btn btn-sm btn-danger" type="submit">Desactivar</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>No hay proveedores registrados.</p>
+  {% endif %}
+</div>
+{% endblock %}
