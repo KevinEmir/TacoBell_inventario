@@ -1,140 +1,110 @@
--- ============================================
--- SISTEMA DE GESTIÓN DE INVENTARIO
--- Base de Datos: InventarioRestaurante
--- Versión (1-1.5 semanas)
--- ============================================
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from .. import db
+from ..models.movimiento import Movimiento
+from ..models.producto import Producto
+from sqlalchemy.exc import IntegrityError
 
--- Crear la base de datos
-CREATE DATABASE InventarioRestaurante;
-GO
+# Blueprint con su prefijo y carpeta de templates
+movimientos_bp = Blueprint("movimientos", __name__, template_folder="templates", url_prefix="/movimientos")
 
-USE InventarioRestaurante;
-GO
+# --------------------------------------------------------------------
+# LISTAR MOVIMIENTOS
+# --------------------------------------------------------------------
+@movimientos_bp.route("/", methods=["GET"])
+def lista():
+    q = request.args.get("q", "")
+    if q:
+        movimientos = Movimiento.query.filter(Movimiento.Tipo.ilike(f"%{q}%")).order_by(Movimiento.FechaCreacion.desc()).all()
+    else:
+        movimientos = Movimiento.query.order_by(Movimiento.FechaCreacion.desc()).all()
+    return render_template("movimientos/lista.html", movimientos=movimientos, q=q)
 
--- ============================================
--- TABLA: Categorias
--- ============================================
-CREATE TABLE Categorias (
-    Id INT IDENTITY(1,1) PRIMARY KEY,
-    Nombre NVARCHAR(100) NOT NULL UNIQUE,
-    Descripcion NVARCHAR(MAX),
-    Activo BIT DEFAULT 1,
-    FechaCreacion DATETIME2 DEFAULT GETDATE()
-);
-GO
+# --------------------------------------------------------------------
+# CREAR MOVIMIENTO
+# --------------------------------------------------------------------
+@movimientos_bp.route("/crear", methods=["GET", "POST"])
+def crear():
+    productos = Producto.query.all()  # Para desplegar lista de productos
+    if request.method == "POST":
+        tipo = request.form.get("tipo", "").strip().lower()
+        cantidad = request.form.get("cantidad", "").strip()
+        motivo = request.form.get("motivo", "").strip()
+        notas = request.form.get("notas", "").strip()
+        usuario = request.form.get("usuario", "Sistema").strip()
+        producto_id = request.form.get("producto_id")
 
--- ============================================
--- TABLA: Proveedores
--- ============================================
-CREATE TABLE Proveedores (
-    Id INT IDENTITY(1,1) PRIMARY KEY,
-    Nombre NVARCHAR(150) NOT NULL,
-    Contacto NVARCHAR(100),
-    Telefono NVARCHAR(20),
-    Email NVARCHAR(100),
-    Direccion NVARCHAR(MAX),
-    Activo BIT DEFAULT 1,
-    FechaCreacion DATETIME2 DEFAULT GETDATE()
-);
-GO
+        # Validaciones básicas
+        if not tipo or not cantidad or not producto_id:
+            flash("Tipo, cantidad y producto son campos obligatorios.", "danger")
+            return render_template("movimientos/form.html", accion="Registrar", movimiento={}, productos=productos)
 
--- ============================================
--- TABLA: Productos
--- ============================================
-CREATE TABLE Productos (
-    Id INT IDENTITY(1,1) PRIMARY KEY,
-    Nombre NVARCHAR(150) NOT NULL,
-    Descripcion NVARCHAR(MAX),
-    CodigoSKU NVARCHAR(50) UNIQUE NOT NULL,
-    
-    -- Stock
-    CantidadActual DECIMAL(10,2) DEFAULT 0,
-    UnidadMedida NVARCHAR(20) NOT NULL,
-    StockMinimo DECIMAL(10,2) DEFAULT 0,
-    
-    -- Precio
-    PrecioUnitario DECIMAL(10,2),
-    
-    -- Relaciones
-    CategoriaId INT NOT NULL,
-    ProveedorId INT NOT NULL,
-    
-    -- Metadata
-    Activo BIT DEFAULT 1,
-    FechaCreacion DATETIME2 DEFAULT GETDATE(),
-    FechaActualizacion DATETIME2 DEFAULT GETDATE(),
-    
-    -- Foreign Keys
-    CONSTRAINT FK_Productos_Categorias FOREIGN KEY (CategoriaId) 
-        REFERENCES Categorias(Id),
-    CONSTRAINT FK_Productos_Proveedores FOREIGN KEY (ProveedorId) 
-        REFERENCES Proveedores(Id)
-);
-GO
+        # Crear objeto Movimiento
+        nuevo = Movimiento(
+            Tipo=tipo,
+            Cantidad=cantidad,
+            Motivo=motivo,
+            Notas=notas,
+            Usuario=usuario,
+            ProductoId=producto_id
+        )
 
--- ============================================
--- TABLA: Movimientos
--- ============================================
-CREATE TABLE Movimientos (
-    Id INT IDENTITY(1,1) PRIMARY KEY,
-    ProductoId INT NOT NULL,
-    
-    -- Tipo: 'entrada', 'salida'
-    Tipo NVARCHAR(20) NOT NULL CHECK (Tipo IN ('entrada', 'salida')),
-    Cantidad DECIMAL(10,2) NOT NULL,
-    
-    -- Información adicional
-    Motivo NVARCHAR(200),
-    Notas NVARCHAR(MAX),
-    Usuario NVARCHAR(100) DEFAULT 'Sistema',
-    
-    -- Metadata
-    FechaCreacion DATETIME2 DEFAULT GETDATE(),
-    
-    -- Foreign Key
-    CONSTRAINT FK_Movimientos_Productos FOREIGN KEY (ProductoId) 
-        REFERENCES Productos(Id)
-);
-GO
+        db.session.add(nuevo)
+        try:
+            db.session.commit()
+            flash("Movimiento registrado correctamente.", "success")
+            return redirect(url_for("movimientos.lista"))
+        except IntegrityError:
+            db.session.rollback()
+            flash("Error al registrar el movimiento. Intenta nuevamente.", "warning")
+            return render_template("movimientos/form.html", accion="Registrar", movimiento=nuevo, productos=productos)
 
--- ============================================
--- ÍNDICES
--- ============================================
+    return render_template("movimientos/form.html", accion="Registrar", movimiento={}, productos=productos)
 
--- Índices para tabla Categorias
-CREATE INDEX IX_Categorias_Nombre ON Categorias(Nombre);
-CREATE INDEX IX_Categorias_Activo ON Categorias(Activo);
-GO
+# --------------------------------------------------------------------
+# EDITAR MOVIMIENTO
+# --------------------------------------------------------------------
+@movimientos_bp.route("/editar/<int:id>", methods=["GET", "POST"])
+def editar(id):
+    movimiento = Movimiento.query.get_or_404(id)
+    productos = Producto.query.all()
 
--- Índices para tabla Proveedores
-CREATE INDEX IX_Proveedores_Nombre ON Proveedores(Nombre);
-CREATE INDEX IX_Proveedores_Activo ON Proveedores(Activo);
-GO
+    if request.method == "POST":
+        tipo = request.form.get("tipo", "").strip().lower()
+        cantidad = request.form.get("cantidad", "").strip()
+        motivo = request.form.get("motivo", "").strip()
+        notas = request.form.get("notas", "").strip()
+        usuario = request.form.get("usuario", "Sistema").strip()
+        producto_id = request.form.get("producto_id")
 
--- Índices para tabla Productos
-CREATE INDEX IX_Productos_Nombre ON Productos(Nombre);
-CREATE INDEX IX_Productos_CodigoSKU ON Productos(CodigoSKU);
-CREATE INDEX IX_Productos_Activo ON Productos(Activo);
-CREATE INDEX IX_Productos_CategoriaId ON Productos(CategoriaId);
-CREATE INDEX IX_Productos_ProveedorId ON Productos(ProveedorId);
-CREATE INDEX IX_Productos_CantidadActual ON Productos(CantidadActual);
-GO
+        if not tipo or not cantidad or not producto_id:
+            flash("Tipo, cantidad y producto son campos obligatorios.", "danger")
+            return render_template("movimientos/form.html", accion="Editar", movimiento=movimiento, productos=productos)
 
--- Índices para tabla Movimientos
-CREATE INDEX IX_Movimientos_ProductoId ON Movimientos(ProductoId);
-CREATE INDEX IX_Movimientos_FechaCreacion ON Movimientos(FechaCreacion);
-CREATE INDEX IX_Movimientos_Tipo ON Movimientos(Tipo);
-GO
+        movimiento.Tipo = tipo
+        movimiento.Cantidad = cantidad
+        movimiento.Motivo = motivo
+        movimiento.Notas = notas
+        movimiento.Usuario = usuario
+        movimiento.ProductoId = producto_id
 
-PRINT '============================================';
-PRINT 'Base de datos creada exitosamente!';
-PRINT '============================================';
-PRINT 'Total de tablas: 4';
-PRINT '  - Categorias';
-PRINT '  - Proveedores';
-PRINT '  - Productos';
-PRINT '  - Movimientos';
-PRINT '============================================';
-PRINT 'Total de índices: 13';
-PRINT '============================================';
-GO
+        try:
+            db.session.commit()
+            flash("Movimiento actualizado correctamente.", "success")
+            return redirect(url_for("movimientos.lista"))
+        except IntegrityError:
+            db.session.rollback()
+            flash("Error al actualizar el movimiento.", "warning")
+            return render_template("movimientos/form.html", accion="Editar", movimiento=movimiento, productos=productos)
+
+    return render_template("movimientos/form.html", accion="Editar", movimiento=movimiento, productos=productos)
+
+# --------------------------------------------------------------------
+# ELIMINAR MOVIMIENTO (LÓGICO O FÍSICO)
+# --------------------------------------------------------------------
+@movimientos_bp.route("/eliminar/<int:id>", methods=["POST"])
+def eliminar(id):
+    movimiento = Movimiento.query.get_or_404(id)
+    db.session.delete(movimiento)
+    db.session.commit()
+    flash("Movimiento eliminado correctamente.", "info")
+    return redirect(url_for("movimientos.lista"))

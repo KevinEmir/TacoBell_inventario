@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Movimientos</h2>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <!-- formulario simple GET para búsqueda -->
+      <form method="GET" action="{{ url_for('movimientos.lista') }}" class="d-flex">
+        <input name="q" class="form-control me-2" type="search" placeholder="Buscar por tipo, motivo o notas..." value="{{ q }}">
+        <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+      </form>
+    </div>
+    <div class="col-md-6 text-end">
+      <a href="{{ url_for('movimientos.crear') }}" class="btn btn-primary">Nuevo Movimiento</a>
+    </div>
+  </div>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Producto</th>
+        <th>Tipo</th>
+        <th>Cantidad</th>
+        <th>Fecha</th>
+        <th>Motivo</th>
+        <th>Notas</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in movimientos %}
+      <tr>
+        <td>{{ m.Id }}</td>
+        <td>{{ m.producto.Nombre if m.producto else '-' }}</td>
+        <td>{{ m.Tipo }}</td>
+        <td>{{ m.Cantidad }}</td>
+        <td>{{ m.FechaCreacion.strftime('%Y-%m-%d %H:%M') if m.FechaCreacion else '' }}</td>
+        <td>{{ m.Motivo or '' }}</td>
+        <td>{{ m.Notas or '' }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="7" class="text-center">No hay movimientos.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -17,9 +17,9 @@ class Proveedor(db.Model):
     - fecha_creacion: marca temporal de creación
     """
 
-    __tablename__ = 'proveedores'  # nombre de la tabla en la BD
+    __tablename__ = 'Proveedores'  # nombre de la tabla en la BD
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    Id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre = db.Column(db.String(150), nullable=False, unique=True)
     contacto = db.Column(db.String(100), nullable=True)
     telefono = db.Column(db.String(20), nullable=True)

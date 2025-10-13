@@ -24,6 +24,7 @@ def create_app():
 
     import app.models.categoria
     import app.models.proveedores
+    import app.models.producto
 
     # Importar y registrar Blueprints (rutas)
 
@@ -32,6 +33,13 @@ def create_app():
 
     from .routes.proveedores import proveedores_bp  
     flask_app.register_blueprint(proveedores_bp, url_prefix="/proveedores")
+
+    from .routes.productos import productos_bp
+    flask_app.register_blueprint(productos_bp, url_prefix="/productos")
+
+    from app.routes.movimientos import movimientos_bp
+    flask_app.register_blueprint(movimientos_bp)
+
 
 
     #Crear las tablas en la base de datos (si no existen)

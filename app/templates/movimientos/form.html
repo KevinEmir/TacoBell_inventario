@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>{{ accion }} Movimiento</h2>
+  <form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+      {{ form.producto_id.label(class="form-label") }}
+      {{ form.producto_id(class="form-select") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.tipo.label(class="form-label") }}
+      {{ form.tipo(class="form-select") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.cantidad.label(class="form-label") }}
+      {{ form.cantidad(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.motivo.label(class="form-label") }}
+      {{ form.motivo(class="form-control", rows=2) }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.notas.label(class="form-label") }}
+      {{ form.notas(class="form-control", rows=3) }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+    <a href="{{ url_for('movimientos.lista') }}" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

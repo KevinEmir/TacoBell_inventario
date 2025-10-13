@@ -28,7 +28,7 @@
       <td>{{ c.Id }}</td>
       <td>{{ c.Nombre }}</td>
       <td>{{ c.Descripcion or '' }}</td>
-      <td>{% if c.Activo %}✅{% else %}❌{% endif %}</td>
+      <td>{% if c.Activo %}{% else %}{% endif %}</td>
       <td>
         <a class="btn btn-sm btn-secondary" href="{{ url_for('categorias.editar', id=c.Id) }}">Editar</a>
         <form method="post" action="{{ url_for('categorias.eliminar', id=c.Id) }}" style="display:inline" onsubmit="return confirm('Desactivar categoría?');">
