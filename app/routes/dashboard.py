@@ -1,7 +1,7 @@
 # app/routes/dashboard.py
 
 from flask import Blueprint, render_template
-from .. import db
+from ..    import db
 from ..models.producto import Producto
 from ..models.movimiento import Movimiento
 from sqlalchemy import func

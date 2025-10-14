@@ -1,0 +1,179 @@
+/* ======================================
+   Taco Bell – Corporate Bell v2
+   Limpio, luminoso, con acentos cálidos
+   ====================================== */
+
+body {
+    background-color: #faf9fb;
+    font-family: 'Poppins', sans-serif;
+    color: #333333;
+    margin: 0;
+    padding: 0;
+}
+
+/* NAVBAR — versión corregida para fondo oscuro */
+.navbar {
+    background-color: #1c1c1c !important; /* gris oscuro con estilo moderno */
+    border-bottom: 3px solid #702082;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand {
+    color: #b87fd9 !important; /* morado claro */
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.navbar-brand:hover {
+    color: #ffffff !important;
+}
+
+.navbar-nav .nav-link {
+    color: #ffffff !important;
+    opacity: 0.8;
+    font-weight: 500;
+    margin: 0 10px;
+    transition: color 0.25s ease, opacity 0.25s ease;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: #b87fd9 !important; /* morado claro */
+    opacity: 1;
+    text-decoration: none;
+}
+
+
+/* TÍTULOS */
+h1, h2, h3, h4, h5 {
+    color: #702082;
+    font-weight: 700;
+}
+
+/* TARJETAS */
+.card {
+    background-color: #ffffff;
+    border: 1px solid #e8e5eb;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+    color: #702082;
+    font-weight: 600;
+}
+
+/* BLOQUES DE ESTADÍSTICA */
+.stat-card {
+    background: linear-gradient(100deg, #ffffff 65%, #f4ecfa 100%);
+    border-left: 6px solid #702082;
+    border-radius: 12px;
+    padding: 1rem 1.4rem;
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: scale(1.02);
+}
+
+.display-6 {
+    color: #333;
+    font-weight: 700;
+}
+
+/* TABLAS */
+.table {
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: #702082;
+    color: white;
+    border: none;
+}
+
+.table tbody tr:hover {
+    background-color: #f6f0fa;
+}
+
+/* BOTONES */
+.btn-primary {
+    background-color: #702082;
+    border-color: #702082;
+    transition: background-color 0.25s ease;
+}
+
+.btn-primary:hover {
+    background-color: #5c0f69;
+}
+
+.btn-accent {
+    background-color: #ffb347;
+    color: #fff;
+    border: none;
+    transition: all 0.25s ease;
+}
+
+.btn-accent:hover {
+    background-color: #ff9f21;
+}
+
+/* CAMPOS DE FORMULARIO */
+.form-control {
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    box-shadow: none;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: #702082;
+    box-shadow: 0 0 0 0.15rem rgba(112, 32, 130, 0.15);
+}
+
+/* FOOTER */
+footer {
+    background-color: #ffffff;
+    border-top: 3px solid #702082;
+    color: #555;
+    padding: 12px 0;
+    text-align: center;
+    margin-top: 40px;
+    font-size: 0.9rem;
+}
+
+/* PEQUEÑOS ACENTOS */
+.accent {
+    color: #ffb347;
+    font-weight: 600;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-thumb {
+    background: #c7a8e0;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #a46ec4;
+}
+
+/* CONTENEDORES GENERALES */
+.container {
+    margin-top: 2rem;
+}
+
+.bg-light {
+    background-color: #faf9fb !important;
+}

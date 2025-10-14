@@ -10,7 +10,10 @@ db = SQLAlchemy()
 
 # Esta función crea y configura una instancia de Flask.
 def create_app():
-    flask_app = Flask(__name__)
+    flask_app = Flask(__name__, static_folder='static', template_folder='templates')
+    
+    import os
+    print("STATIC FOLDER PATH:", os.path.abspath(flask_app.static_folder))
 
 
     # Aquí Flask leerá las variables de la clase Config
