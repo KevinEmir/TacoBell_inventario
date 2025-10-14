@@ -11,7 +11,8 @@ def lista():
     if q:
         categorias = Categoria.query.filter(Categoria.Nombre.ilike(f"%{q}%")).order_by(Categoria.Nombre).all()
     else:
-        categorias = Categoria.query.order_by(Categoria.Nombre).all()
+        categorias = Categoria.query.order_by(Categoria.Id.asc()).all()
+
     return render_template("categorias/lista.html", categorias=categorias, q=q)
 
 @categorias_bp.route("/crear", methods=["GET", "POST"])

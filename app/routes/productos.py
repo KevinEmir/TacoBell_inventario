@@ -6,14 +6,11 @@ from app.models.proveedores import Proveedor
 from app.forms.producto_form import ProductoForm
 from sqlalchemy.exc import IntegrityError
 
-# ==============================
-# CONFIGURACIÓN DEL BLUEPRINT
-# ==============================
 productos_bp = Blueprint(
-    "productos",                # nombre interno del módulo
-    __name__,                   # referencia del archivo actual
-    template_folder="templates",# carpeta donde buscará las vistas HTML
-    url_prefix="/productos"     # prefijo de las URLs (ej: /productos/crear)
+    "productos",
+    __name__,
+    template_folder="templates",
+    url_prefix="/productos"
 )
 
 # ==============================
@@ -23,16 +20,8 @@ productos_bp = Blueprint(
 def lista():
     q = request.args.get("q", "").strip()
 
-    consulta = (
-        db.session.query(
-            Producto,
-            Categoria.Nombre.label("CategoriaNombre"),
-            Proveedor.nombre.label("ProveedorNombre")
-        )
-        .join(Categoria, Producto.CategoriaId == Categoria.Id)
-        .join(Proveedor, Producto.ProveedorId == Proveedor.Id)
-        .order_by(Producto.Id.desc())
-    )
+    # Traer productos con relaciones activas
+    consulta = Producto.query.join(Categoria).join(Proveedor).order_by(Producto.Id.desc())
 
     if q:
         consulta = consulta.filter(Producto.Nombre.ilike(f"%{q}%"))
@@ -47,27 +36,26 @@ def lista():
 # ==============================
 @productos_bp.route("/crear", methods=["GET", "POST"])
 def crear():
-    """Formulario para registrar un nuevo producto."""
     form = ProductoForm()
 
-    # Cargar las opciones de categoría y proveedor desde la BD
-    form.categoria_id.choices = [(c.Id, c.Nombre) for c in Categoria.query.all()]
-    form.proveedor_id.choices = [(p.Id, p.nombre) for p in Proveedor.query.all()]
-
+    # Cargar listas desplegables
+    form.CategoriaId.choices = [(c.Id, c.Nombre) for c in Categoria.query.all()]
+    form.ProveedorId.choices = [(p.Id, p.nombre) for p in Proveedor.query.all()]
 
     if request.method == "POST" and form.validate_on_submit():
         nuevo = Producto(
-            Nombre=form.nombre.data,
-            Descripcion=form.descripcion.data,
-            CodigoSKU=form.codigo_sku.data,
-            CantidadActual=form.cantidad_actual.data,
-            UnidadMedida=form.unidad_medida.data,
-            StockMinimo=form.stock_minimo.data,
-            PrecioUnitario=form.precio_unitario.data,
-            CategoriaId=form.categoria_id.data,
-            ProveedorId=form.proveedor_id.data,
-            Activo=form.activo.data
+            Nombre=form.Nombre.data,
+            Descripcion=form.Descripcion.data,
+            CodigoSKU=form.CodigoSKU.data,
+            CantidadActual=form.CantidadActual.data,
+            UnidadMedida=form.UnidadMedida.data,
+            StockMinimo=form.StockMinimo.data,
+            PrecioUnitario=form.PrecioUnitario.data,
+            CategoriaId=form.CategoriaId.data,
+            ProveedorId=form.ProveedorId.data,
+            Activo=form.Activo.data
         )
+
         db.session.add(nuevo)
         try:
             db.session.commit()
@@ -79,22 +67,18 @@ def crear():
 
     return render_template("productos/form.html", form=form, accion="Crear")
 
+
 # ==============================
 # EDITAR PRODUCTO
 # ==============================
 @productos_bp.route("/editar/<int:id>", methods=["GET", "POST"])
-@productos_bp.route("/editar/<int:id>", methods=["GET", "POST"])
 def editar(id):
-    """Formulario para editar un producto existente."""
     producto = Producto.query.get_or_404(id)
     form = ProductoForm()
 
-    # Cargar listas desplegables
     form.CategoriaId.choices = [(c.Id, c.Nombre) for c in Categoria.query.all()]
     form.ProveedorId.choices = [(p.Id, p.nombre) for p in Proveedor.query.all()]
 
-
-    # --- Prellenar valores del producto (solo en GET) ---
     if request.method == "GET":
         form.Nombre.data = producto.Nombre
         form.Descripcion.data = producto.Descripcion
@@ -107,7 +91,6 @@ def editar(id):
         form.ProveedorId.data = producto.ProveedorId
         form.Activo.data = producto.Activo
 
-    # --- Guardar cambios (POST) ---
     if request.method == "POST" and form.validate_on_submit():
         producto.Nombre = form.Nombre.data
         producto.Descripcion = form.Descripcion.data
@@ -119,7 +102,6 @@ def editar(id):
         producto.CategoriaId = form.CategoriaId.data
         producto.ProveedorId = form.ProveedorId.data
         producto.Activo = form.Activo.data
-
 
         try:
             db.session.commit()
@@ -133,11 +115,10 @@ def editar(id):
 
 
 # ==============================
-# ELIMINAR (LÓGICAMENTE) PRODUCTO
+# ELIMINAR PRODUCTO (LÓGICO)
 # ==============================
 @productos_bp.route("/eliminar/<int:id>", methods=["POST"])
 def eliminar(id):
-    """Desactiva un producto (eliminación lógica)."""
     producto = Producto.query.get_or_404(id)
     producto.Activo = False
     db.session.commit()

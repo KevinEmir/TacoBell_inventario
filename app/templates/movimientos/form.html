@@ -46,7 +46,6 @@
   const tipoSelect = document.getElementById("tipo_movimiento");
   const motivoSelect = document.getElementById("motivo_select");
 
-  // Definimos los motivos posibles
   const motivos = {
     entrada: ["Compra", "Devolución", "Ajuste"],
     salida: ["Producción", "Merma", "Vencido"]
@@ -64,17 +63,13 @@
       motivoSelect.appendChild(option);
     });
 
-    // Si existe un motivo guardado (al editar), lo seleccionamos
-    const motivoGuardado = "{{ movimiento.Motivo if movimiento is defined else '' }}";
-    if (motivoGuardado) {
-      motivoSelect.value = motivoGuardado;
-    }
+    {% if movimiento %}
+      const motivoGuardado = "{{ movimiento.Motivo or '' }}";
+      if (motivoGuardado) motivoSelect.value = motivoGuardado;
+    {% endif %}
   }
 
-  // Inicializar motivos al cargar la página
   actualizarMotivos();
-
-  // Cambiar dinámicamente cuando se seleccione otro tipo
   tipoSelect.addEventListener("change", actualizarMotivos);
 </script>
 {% endblock %}

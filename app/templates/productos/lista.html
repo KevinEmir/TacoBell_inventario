@@ -37,8 +37,9 @@
           {% for p in productos %}
           <tr>
             <td>{{ p.Nombre }}</td>
-            <td>{{ p.categoria.Nombre }}</td>
-            <td>{{ p.proveedor.Nombre }}</td>
+            <td>{{ p.categoria.Nombre if p.categoria else '-' }}</td>
+            <td>{{ p.proveedor.nombre if p.proveedor else '-' }}</td>
+
             <td>{{ p.CantidadActual }}</td>
             <td>{{ p.UnidadMedida }}</td>
             <td>₡{{ "%.2f"|format(p.PrecioUnitario or 0) }}</td>
