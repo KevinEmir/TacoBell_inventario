@@ -63,3 +63,11 @@ def eliminar(id):
     db.session.commit()
     flash("Categoría desactivada (eliminación lógica).", "info")
     return redirect(url_for("categorias.lista"))
+
+@categorias_bp.route("/reactivar/<int:id>", methods=["POST"])
+def reactivar(id):
+    categoria = Categoria.query.get_or_404(id)
+    categoria.Activo = True
+    db.session.commit()
+    flash("Categoría reactivada correctamente.", "success")
+    return redirect(url_for("categorias.lista"))

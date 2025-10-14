@@ -8,13 +8,13 @@ proveedores_bp = Blueprint('proveedores', __name__, template_folder='../../templ
 @proveedores_bp.route('/')
 def index():
     """Listar proveedores"""
-    # buscar query string 'q' para búsqueda por nombre
     q = request.args.get('q', '').strip()
     if q:
         proveedores = Proveedor.query.filter(Proveedor.nombre.ilike(f"%{q}%")).order_by(Proveedor.nombre).all()
     else:
         proveedores = Proveedor.query.order_by(Proveedor.nombre).all()
     return render_template('proveedores/lista.html', proveedores=proveedores, q=q)
+
 
 @proveedores_bp.route('/nuevo', methods=['GET', 'POST'])
 def nuevo():
@@ -26,7 +26,6 @@ def nuevo():
         email = request.form.get('email', '').strip() or None
         direccion = request.form.get('direccion', '').strip() or None
 
-        # Validaciones simples en backend
         errors = []
         if not nombre:
             errors.append("El nombre es obligatorio.")
@@ -36,7 +35,6 @@ def nuevo():
         if errors:
             for e in errors:
                 flash(e, 'danger')
-            # devolver los datos ingresados para que el usuario no los pierda
             return render_template('proveedores/form.html', proveedor=None, form=request.form)
 
         proveedor = Proveedor(
@@ -57,8 +55,8 @@ def nuevo():
             flash("Ya existe un proveedor con ese nombre.", "danger")
             return render_template('proveedores/form.html', proveedor=None, form=request.form)
 
-    # GET
     return render_template('proveedores/form.html', proveedor=None, form={})
+
 
 @proveedores_bp.route('/editar/<int:proveedor_id>', methods=['GET', 'POST'])
 def editar(proveedor_id):
@@ -98,17 +96,24 @@ def editar(proveedor_id):
             flash("Ya existe un proveedor con ese nombre.", "danger")
             return render_template('proveedores/form.html', proveedor=proveedor, form=request.form)
 
-    # GET
     return render_template('proveedores/form.html', proveedor=proveedor, form={})
+
 
 @proveedores_bp.route('/eliminar/<int:proveedor_id>', methods=['POST'])
 def eliminar(proveedor_id):
     """Eliminar (desactivar) proveedor - eliminación lógica"""
     proveedor = Proveedor.query.get_or_404(proveedor_id)
-
-    # Validación importante: si existen productos activos asociados, deberías advertir.
-    # En este momento el modelo Producto puede no existir aún; dejar la comprobación para más adelante.
     proveedor.activo = False
     db.session.commit()
-    flash("Proveedor desactivado correctamente.", "success")
+    flash("Proveedor desactivado correctamente.", "warning")
     return redirect(url_for('proveedores.index'))
+
+
+@proveedores_bp.route("/reactivar/<int:proveedor_id>", methods=["POST"])
+def reactivar(proveedor_id):
+    """Reactivar proveedor desactivado"""
+    proveedor = Proveedor.query.get_or_404(proveedor_id)
+    proveedor.activo = True
+    db.session.commit()
+    flash("Proveedor reactivado correctamente.", "success")
+    return redirect(url_for("proveedores.index"))

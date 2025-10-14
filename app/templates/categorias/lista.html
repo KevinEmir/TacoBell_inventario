@@ -1,42 +1,52 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="container mt-4">
   <h2>Categorías</h2>
-  <a class="btn btn-primary" href="{{ url_for('categorias.crear') }}">Crear categoría</a>
+  <a href="{{ url_for('categorias.crear') }}" class="btn btn-primary mb-3">Nueva Categoría</a>
+  
+  <table class="table table-bordered table-striped align-middle">
+    <thead class="table-purple">
+      <tr>
+        <th>Id</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Activo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in categorias %}
+      <tr>
+        <td>{{ c.Id }}</td>
+        <td>{{ c.Nombre }}</td>
+        <td>{{ c.Descripcion or '-' }}</td>
+        <td>
+          {% if c.Activo %}
+            <span class="badge bg-success">Sí</span>
+          {% else %}
+            <span class="badge bg-danger">No</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if c.Activo %}
+            <a href="{{ url_for('categorias.editar', id=c.Id) }}" class="btn btn-secondary btn-sm">Editar</a>
+            <form action="{{ url_for('categorias.eliminar', id=c.Id) }}" method="POST" style="display:inline;">
+              <button type="submit" class="btn btn-danger btn-sm"
+                      onclick="return confirm('¿Seguro que deseas desactivar esta categoría?')">
+                Desactivar
+              </button>
+            </form>
+          {% else %}
+            <form action="{{ url_for('categorias.reactivar', id=c.Id) }}" method="POST" style="display:inline;">
+              <button type="submit" class="btn btn-success btn-sm">
+                Reactivar
+              </button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
-
-<form method="get" class="mb-3">
-  <div class="input-group">
-    <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Buscar por nombre o parte...">
-    <button class="btn btn-outline-secondary" type="submit">Buscar</button>
-  </div>
-</form>
-
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>Id</th>
-      <th>Nombre</th>
-      <th>Descripción</th>
-      <th>Activo</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for c in categorias %}
-    <tr>
-      <td>{{ c.Id }}</td>
-      <td>{{ c.Nombre }}</td>
-      <td>{{ c.Descripcion or '' }}</td>
-      <td>{% if c.Activo %}{% else %}{% endif %}</td>
-      <td>
-        <a class="btn btn-sm btn-secondary" href="{{ url_for('categorias.editar', id=c.Id) }}">Editar</a>
-        <form method="post" action="{{ url_for('categorias.eliminar', id=c.Id) }}" style="display:inline" onsubmit="return confirm('Desactivar categoría?');">
-          <button class="btn btn-sm btn-danger" type="submit">Eliminar</button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
 {% endblock %}

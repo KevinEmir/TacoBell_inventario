@@ -35,13 +35,25 @@
         <td>{{ p.contacto or '-' }}</td>
         <td>{{ p.telefono or '-' }}</td>
         <td>{{ p.email or '-' }}</td>
-        <td>{{ 'Sí' if p.activo else 'No' }}</td>
         <td>
-          <a href="{{ url_for('proveedores.editar', proveedor_id=p.Id) }}" class="btn btn-sm btn-secondary">Editar</a>
+          {% if p.activo %}
+            <span class="badge bg-success">Sí</span>
+          {% else %}
+            <span class="badge bg-danger">No</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if p.activo %}
+            <a href="{{ url_for('proveedores.editar', proveedor_id=p.Id) }}" class="btn btn-sm btn-secondary">Editar</a>
 
-          <form action="{{ url_for('proveedores.eliminar', proveedor_id=p.Id) }}" method="post" style="display:inline-block" onsubmit="return confirm('¿Desactivar proveedor?');">
-            <button class="btn btn-sm btn-danger" type="submit">Desactivar</button>
-          </form>
+            <form action="{{ url_for('proveedores.eliminar', proveedor_id=p.Id) }}" method="post" style="display:inline-block" onsubmit="return confirm('¿Desactivar proveedor?');">
+              <button class="btn btn-sm btn-danger" type="submit">Desactivar</button>
+            </form>
+          {% else %}
+            <form action="{{ url_for('proveedores.reactivar', proveedor_id=p.Id) }}" method="post" style="display:inline-block">
+              <button class="btn btn-sm btn-success" type="submit">Reactivar</button>
+            </form>
+          {% endif %}
         </td>
       </tr>
       {% endfor %}

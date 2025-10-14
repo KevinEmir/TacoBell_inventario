@@ -5,33 +5,76 @@
   <form method="POST">
     {{ form.hidden_tag() }}
 
+    <!-- Producto -->
     <div class="mb-3">
       {{ form.producto_id.label(class="form-label") }}
       {{ form.producto_id(class="form-select") }}
     </div>
 
+    <!-- Tipo -->
     <div class="mb-3">
       {{ form.tipo.label(class="form-label") }}
-      {{ form.tipo(class="form-select") }}
+      {{ form.tipo(class="form-select", id="tipo_movimiento") }}
     </div>
 
+    <!-- Cantidad -->
     <div class="mb-3">
       {{ form.cantidad.label(class="form-label") }}
       {{ form.cantidad(class="form-control") }}
     </div>
 
+    <!-- Motivo -->
     <div class="mb-3">
       {{ form.motivo.label(class="form-label") }}
-      {{ form.motivo(class="form-control", rows=2) }}
+      {{ form.motivo(class="form-select", id="motivo_select") }}
     </div>
 
+    <!-- Notas -->
     <div class="mb-3">
       {{ form.notas.label(class="form-label") }}
       {{ form.notas(class="form-control", rows=3) }}
     </div>
 
+    <!-- Botones -->
     <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
     <a href="{{ url_for('movimientos.lista') }}" class="btn btn-secondary">Cancelar</a>
   </form>
 </div>
+
+<!-- SCRIPT dinámico -->
+<script>
+  const tipoSelect = document.getElementById("tipo_movimiento");
+  const motivoSelect = document.getElementById("motivo_select");
+
+  // Definimos los motivos posibles
+  const motivos = {
+    entrada: ["Compra", "Devolución", "Ajuste"],
+    salida: ["Producción", "Merma", "Vencido"]
+  };
+
+  function actualizarMotivos() {
+    const tipo = tipoSelect.value;
+    const opciones = motivos[tipo] || [];
+
+    motivoSelect.innerHTML = "";
+    opciones.forEach(m => {
+      const option = document.createElement("option");
+      option.value = m;
+      option.textContent = m;
+      motivoSelect.appendChild(option);
+    });
+
+    // Si existe un motivo guardado (al editar), lo seleccionamos
+    const motivoGuardado = "{{ movimiento.Motivo if movimiento is defined else '' }}";
+    if (motivoGuardado) {
+      motivoSelect.value = motivoGuardado;
+    }
+  }
+
+  // Inicializar motivos al cargar la página
+  actualizarMotivos();
+
+  // Cambiar dinámicamente cuando se seleccione otro tipo
+  tipoSelect.addEventListener("change", actualizarMotivos);
+</script>
 {% endblock %}

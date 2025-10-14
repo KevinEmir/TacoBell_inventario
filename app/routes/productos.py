@@ -19,17 +19,28 @@ productos_bp = Blueprint(
 # ==============================
 # LISTAR PRODUCTOS
 # ==============================
-@productos_bp.route("/", methods=["GET"])
+@productos_bp.route("/")
 def lista():
-    """Muestra la lista de productos con opción de búsqueda."""
     q = request.args.get("q", "").strip()
 
+    consulta = (
+        db.session.query(
+            Producto,
+            Categoria.Nombre.label("CategoriaNombre"),
+            Proveedor.nombre.label("ProveedorNombre")
+        )
+        .join(Categoria, Producto.CategoriaId == Categoria.Id)
+        .join(Proveedor, Producto.ProveedorId == Proveedor.Id)
+        .order_by(Producto.Id.desc())
+    )
+
     if q:
-        productos = Producto.query.filter(Producto.Nombre.ilike(f"%{q}%")).order_by(Producto.Nombre).all()
-    else:
-        productos = Producto.query.order_by(Producto.Nombre).all()
+        consulta = consulta.filter(Producto.Nombre.ilike(f"%{q}%"))
+
+    productos = consulta.all()
 
     return render_template("productos/lista.html", productos=productos, q=q)
+
 
 # ==============================
 # CREAR PRODUCTO
@@ -72,26 +83,43 @@ def crear():
 # EDITAR PRODUCTO
 # ==============================
 @productos_bp.route("/editar/<int:id>", methods=["GET", "POST"])
+@productos_bp.route("/editar/<int:id>", methods=["GET", "POST"])
 def editar(id):
     """Formulario para editar un producto existente."""
     producto = Producto.query.get_or_404(id)
-    form = ProductoForm(obj=producto)
+    form = ProductoForm()
 
     # Cargar listas desplegables
-    form.categoria_id.choices = [(c.Id, c.Nombre) for c in Categoria.query.all()]
-    form.proveedor_id.choices = [(p.Id, p.nombre) for p in Proveedor.query.all()]
+    form.CategoriaId.choices = [(c.Id, c.Nombre) for c in Categoria.query.all()]
+    form.ProveedorId.choices = [(p.Id, p.nombre) for p in Proveedor.query.all()]
 
+
+    # --- Prellenar valores del producto (solo en GET) ---
+    if request.method == "GET":
+        form.Nombre.data = producto.Nombre
+        form.Descripcion.data = producto.Descripcion
+        form.CodigoSKU.data = producto.CodigoSKU
+        form.CantidadActual.data = producto.CantidadActual
+        form.UnidadMedida.data = producto.UnidadMedida
+        form.StockMinimo.data = producto.StockMinimo
+        form.PrecioUnitario.data = producto.PrecioUnitario
+        form.CategoriaId.data = producto.CategoriaId
+        form.ProveedorId.data = producto.ProveedorId
+        form.Activo.data = producto.Activo
+
+    # --- Guardar cambios (POST) ---
     if request.method == "POST" and form.validate_on_submit():
-        producto.Nombre = form.nombre.data
-        producto.Descripcion = form.descripcion.data
-        producto.CodigoSKU = form.codigo_sku.data
-        producto.CantidadActual = form.cantidad_actual.data
-        producto.UnidadMedida = form.unidad_medida.data
-        producto.StockMinimo = form.stock_minimo.data
-        producto.PrecioUnitario = form.precio_unitario.data
-        producto.CategoriaId = form.categoria_id.data
-        producto.ProveedorId = form.proveedor_id.data
-        producto.Activo = form.activo.data
+        producto.Nombre = form.Nombre.data
+        producto.Descripcion = form.Descripcion.data
+        producto.CodigoSKU = form.CodigoSKU.data
+        producto.CantidadActual = form.CantidadActual.data
+        producto.UnidadMedida = form.UnidadMedida.data
+        producto.StockMinimo = form.StockMinimo.data
+        producto.PrecioUnitario = form.PrecioUnitario.data
+        producto.CategoriaId = form.CategoriaId.data
+        producto.ProveedorId = form.ProveedorId.data
+        producto.Activo = form.Activo.data
+
 
         try:
             db.session.commit()
@@ -102,6 +130,7 @@ def editar(id):
             flash("Error: ya existe un producto con ese SKU.", "danger")
 
     return render_template("productos/form.html", form=form, accion="Editar", producto=producto)
+
 
 # ==============================
 # ELIMINAR (LÓGICAMENTE) PRODUCTO
