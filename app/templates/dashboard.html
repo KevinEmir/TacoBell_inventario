@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1 class="mb-4">Dashboard</h1>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="card-title">Productos activos</h6>
+          <p class="display-6">{{ total_productos_activos }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="card-title">Productos bajo stock</h6>
+          <p class="display-6">{{ count_bajo_stock }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="card-title">Productos sin stock</h6>
+          <p class="display-6">{{ productos_sin_stock }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="card-title">Valor total inventario</h6>
+          <p class="display-6">{{ valor_total|colones }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-header">
+          Últimos movimientos
+        </div>
+        <div class="card-body p-0">
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Producto</th>
+                <th>Tipo</th>
+                <th>Cantidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for m in ultimos_movimientos %}
+              <tr>
+                <td>{{ m.FechaCreacion.strftime('%Y-%m-%d %H:%M') if m.FechaCreacion else '' }}</td>
+                <td>{{ m.producto.Nombre if m.producto else '---' }}</td>
+                <td>{{ m.Tipo }}</td>
+                <td>{{ m.Cantidad }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="4" class="text-center">No hay movimientos.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-header">Productos con stock bajo (top 10)</div>
+        <div class="card-body p-0">
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Actual</th>
+                <th>Mínimo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in productos_bajo_stock %}
+              <tr>
+                <td>{{ p.Nombre }}</td>
+                <td>{{ p.CantidadActual }}</td>
+                <td>{{ p.StockMinimo }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="3" class="text-center">Sin productos en esta condición</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

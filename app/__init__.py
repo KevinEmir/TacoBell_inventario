@@ -37,14 +37,25 @@ def create_app():
     from .routes.productos import productos_bp
     flask_app.register_blueprint(productos_bp, url_prefix="/productos")
 
-    from app.routes.movimientos import movimientos_bp
-    flask_app.register_blueprint(movimientos_bp)
+    from .routes.movimientos import movimientos_bp
+    flask_app.register_blueprint(movimientos_bp, url_prefix="/movimientos")
+
+    from .routes.dashboard import dashboard_bp
+    flask_app.register_blueprint(dashboard_bp)
+
 
 
 
     #Crear las tablas en la base de datos (si no existen)
     with flask_app.app_context():
         db.create_all()
+
+    @flask_app.template_filter('colones')
+    def formato_colones(valor):
+        try:
+            return f"₡{valor:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+        except:
+            return "₡0,00"
 
     # Devolver la app ya configurada
     return flask_app
