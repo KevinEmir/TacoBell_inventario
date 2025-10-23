@@ -46,6 +46,10 @@ def create_app():
     from .routes.dashboard import dashboard_bp
     flask_app.register_blueprint(dashboard_bp)
 
+    from .routes.api import api_bp
+    flask_app.register_blueprint(api_bp)
+
+
 
 
 

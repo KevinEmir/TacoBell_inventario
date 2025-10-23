@@ -1,35 +1,35 @@
 /* ======================================
-   Taco Bell – Corporate Bell v2
-   Limpio, luminoso, con acentos cálidos
+   Taco Bell – Corporate Bell v3 (Unified)
+   Moderno, consistente, limpio
    ====================================== */
 
 body {
     background-color: #faf9fb;
     font-family: 'Poppins', sans-serif;
-    color: #333333;
+    color: #333;
     margin: 0;
     padding: 0;
 }
 
-/* NAVBAR — versión corregida para fondo oscuro */
+/* === NAVBAR === */
 .navbar {
-    background-color: #1c1c1c !important; /* gris oscuro con estilo moderno */
+    background-color: #1c1c1c !important;
     border-bottom: 3px solid #702082;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .navbar-brand {
-    color: #b87fd9 !important; /* morado claro */
+    color: #b87fd9 !important;
     font-weight: 700;
     font-size: 1.2rem;
 }
 
 .navbar-brand:hover {
-    color: #ffffff !important;
+    color: #fff !important;
 }
 
 .navbar-nav .nav-link {
-    color: #ffffff !important;
+    color: #fff !important;
     opacity: 0.8;
     font-weight: 500;
     margin: 0 10px;
@@ -38,21 +38,19 @@ body {
 
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link.active {
-    color: #b87fd9 !important; /* morado claro */
+    color: #b87fd9 !important;
     opacity: 1;
-    text-decoration: none;
 }
 
-
-/* TÍTULOS */
+/* === TITULOS === */
 h1, h2, h3, h4, h5 {
     color: #702082;
     font-weight: 700;
 }
 
-/* TARJETAS */
+/* === TARJETAS === */
 .card {
-    background-color: #ffffff;
+    background-color: #fff;
     border: 1px solid #e8e5eb;
     border-radius: 14px;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
@@ -64,70 +62,16 @@ h1, h2, h3, h4, h5 {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
 }
 
-.card-title {
-    color: #702082;
-    font-weight: 600;
-}
-
-/* BLOQUES DE ESTADÍSTICA */
-.stat-card {
-    background: linear-gradient(100deg, #ffffff 65%, #f4ecfa 100%);
-    border-left: 6px solid #702082;
+/* === SECCIONES DE FILTRO (productos, categorías, etc.) === */
+form.row, .filter-card {
+    background: #fff;
     border-radius: 12px;
-    padding: 1rem 1.4rem;
-    transition: transform 0.2s ease;
+    padding: 1.2rem 1.5rem;
+    border: 1px solid #e9e4ef;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
-.stat-card:hover {
-    transform: scale(1.02);
-}
-
-.display-6 {
-    color: #333;
-    font-weight: 700;
-}
-
-/* TABLAS */
-.table {
-    border: 1px solid #ddd;
-    background-color: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.table thead th {
-    background-color: #702082;
-    color: white;
-    border: none;
-}
-
-.table tbody tr:hover {
-    background-color: #f6f0fa;
-}
-
-/* BOTONES */
-.btn-primary {
-    background-color: #702082;
-    border-color: #702082;
-    transition: background-color 0.25s ease;
-}
-
-.btn-primary:hover {
-    background-color: #5c0f69;
-}
-
-.btn-accent {
-    background-color: #ffb347;
-    color: #fff;
-    border: none;
-    transition: all 0.25s ease;
-}
-
-.btn-accent:hover {
-    background-color: #ff9f21;
-}
-
-/* CAMPOS DE FORMULARIO */
+/* === FORMULARIOS === */
 .form-control {
     border-radius: 10px;
     border: 1px solid #ccc;
@@ -140,24 +84,103 @@ h1, h2, h3, h4, h5 {
     box-shadow: 0 0 0 0.15rem rgba(112, 32, 130, 0.15);
 }
 
-/* FOOTER */
-footer {
-    background-color: #ffffff;
-    border-top: 3px solid #702082;
-    color: #555;
-    padding: 12px 0;
-    text-align: center;
-    margin-top: 40px;
-    font-size: 0.9rem;
+.form-label {
+    font-weight: 500;
+    color: #444;
 }
 
-/* PEQUEÑOS ACENTOS */
-.accent {
-    color: #ffb347;
+/* === BOTONES === */
+.btn {
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.25s ease;
+}
+
+.btn-primary {
+    background-color: #702082;
+    border-color: #702082;
+}
+
+.btn-primary:hover {
+    background-color: #5c0f69;
+}
+
+.btn-accent {
+    background-color: #ffb347;
+    color: #fff;
+    border: none;
+}
+
+.btn-accent:hover {
+    background-color: #ff9f21;
+}
+
+.btn-outline-warning, .btn-outline-danger {
+    border-width: 1.5px;
     font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
-/* SCROLLBAR */
+.btn-outline-warning:hover {
+    background-color: #ffc107;
+    color: #fff;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* === TABLAS === */
+.table, .modern-table {
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: #fff;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.table thead th,
+.modern-table thead th {
+    background: linear-gradient(90deg, #702082 0%, #b87fd9 100%);
+    color: white;
+    border: none;
+    padding: 14px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.table tbody tr:hover,
+.modern-table tbody tr:hover {
+    background-color: #f9f4fc;
+    transform: translateY(-2px);
+}
+
+.table td, .modern-table td {
+    padding: 12px 14px;
+    vertical-align: middle;
+}
+
+/* === ESTADO / BADGES === */
+.status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.bg-soft-accent {
+    background-color: rgba(255, 179, 71, 0.15);
+    color: #c17a00;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 4px 10px;
+}
+
+/* === SCROLLBAR === */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -169,11 +192,113 @@ footer {
     background: #a46ec4;
 }
 
-/* CONTENEDORES GENERALES */
-.container {
-    margin-top: 2rem;
+/* === MENÚ LATERAL === */
+#sideMenu {
+    background: linear-gradient(180deg, #1C1C1C 0%, #2D033B 100%);
+}
+#sideMenu h5 {
+    color: #FFB347;
+    font-weight: 600;
+}
+.menu-link {
+    color: #ffffffcc;
+    display: block;
+    padding: 10px 0;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.25s ease;
+}
+.menu-link:hover {
+    color: #FFB347;
+    padding-left: 4px;
 }
 
-.bg-light {
-    background-color: #faf9fb !important;
+/* === BOTÓN DEL MENÚ === */
+#menuToggle {
+    background-color: #702082 !important;
+    border: none;
+    font-weight: bold;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+#menuToggle:hover {
+    background-color: #5c0f69 !important;
+}
+
+/* === NAVBAR CON LOGO Y TEXTO === */
+.navbar {
+  background: linear-gradient(90deg, #1c1c1c 0%, #2a0d3b 100%) !important;
+  border-bottom: 3px solid #702082;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  padding: 0.7rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 1050;
+}
+
+.navbar-logo {
+  height: 34px;
+  width: auto;
+  filter: brightness(1.1);
+}
+
+.navbar-brand-text {
+  color: #ffb347;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.navbar-brand-text:hover {
+  color: #ffffff;
+  transition: color 0.2s ease-in-out;
+}
+/* Navbar branding centrado */
+.navbar {
+  background: linear-gradient(90deg, #1c1c1c 0%, #2a0d3b 100%) !important;
+  border-bottom: 3px solid #702082;
+  padding: 0.6rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 1050;
+}
+
+.navbar-logo {
+  height: 34px;
+  width: auto;
+  filter: brightness(1.1);
+  display: inline-block;
+}
+
+.navbar-brand-text {
+  color: #ffb347;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Asegura que el bloque central esté centrado */
+.navbar .container-fluid > .d-flex {
+  gap: 10px;
+}
+
+/* Evita superposición en pantallas pequeñas */
+@media (max-width: 576px) {
+  .navbar-logo { height: 28px; }
+  .navbar-brand-text { font-size: 0.95rem; }
+}
+
+
+
+/* === FOOTER === */
+footer {
+    background-color: #fff;
+    border-top: 3px solid #702082;
+    color: #555;
+    padding: 12px 0;
+    text-align: center;
+    margin-top: 40px;
+    font-size: 0.9rem;
 }

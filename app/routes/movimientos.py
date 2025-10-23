@@ -10,12 +10,34 @@ movimientos_bp = Blueprint("movimientos", __name__, template_folder="templates",
 
 @movimientos_bp.route("/", methods=["GET"])
 def lista():
-    q = request.args.get("q", "")
+    q = request.args.get("q", "").strip()
+    tipo = request.args.get("tipo", "")
+    activo = request.args.get("activo", "")
+
+    consulta = Movimiento.query.order_by(Movimiento.Id.desc())
+
+    # 🔍 Filtro por nombre o código de producto relacionado
     if q:
-        movimientos = Movimiento.query.filter(Movimiento.Tipo.ilike(f"%{q}%")).order_by(Movimiento.FechaCreacion.desc()).all()
-    else:
-        movimientos = Movimiento.query.order_by(Movimiento.FechaCreacion.desc()).all()
-    return render_template("movimientos/lista.html", movimientos=movimientos, q=q)
+        consulta = consulta.join(Producto).filter(Producto.Nombre.ilike(f"%{q}%"))
+
+    # ⚙️ Filtro por tipo de movimiento (entrada / salida)
+    if tipo:
+        consulta = consulta.filter(Movimiento.Tipo == tipo)
+
+    # ✅ Filtro por estado (activo / inactivo)
+    if activo in ["0", "1"]:
+        consulta = consulta.filter(Movimiento.Activo == (activo == "1"))
+
+    movimientos = consulta.all()
+
+    return render_template(
+        "movimientos/lista.html",
+        movimientos=movimientos,
+        q=q,
+        tipo=tipo,
+        activo=activo
+    )
+
 
 
 @movimientos_bp.route("/crear", methods=["GET", "POST"])

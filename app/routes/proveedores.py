@@ -5,15 +5,36 @@ from sqlalchemy.exc import IntegrityError
 
 proveedores_bp = Blueprint('proveedores', __name__, template_folder='../../templates/proveedores')
 
-@proveedores_bp.route('/')
-def index():
-    """Listar proveedores"""
-    q = request.args.get('q', '').strip()
+@proveedores_bp.route("/", methods=["GET"])
+def lista():
+    q = request.args.get("q", "").strip()
+    activo = request.args.get("activo", "")
+
+    # Consulta base ordenada por Id descendente
+    consulta = Proveedor.query.order_by(Proveedor.Id.desc())
+
+    # Filtro por nombre, contacto o email
     if q:
-        proveedores = Proveedor.query.filter(Proveedor.nombre.ilike(f"%{q}%")).order_by(Proveedor.nombre).all()
-    else:
-        proveedores = Proveedor.query.order_by(Proveedor.nombre).all()
-    return render_template('proveedores/lista.html', proveedores=proveedores, q=q)
+        consulta = consulta.filter(
+            (Proveedor.nombre.ilike(f"%{q}%")) |
+            (Proveedor.contacto.ilike(f"%{q}%")) |
+            (Proveedor.email.ilike(f"%{q}%"))
+        )
+
+    # Filtro por estado (activo/inactivo)
+    if activo in ["0", "1"]:
+        consulta = consulta.filter(Proveedor.activo == (activo == "1"))
+
+    proveedores = consulta.all()
+
+    return render_template(
+        "proveedores/lista.html",
+        proveedores=proveedores,
+        q=q,
+        activo=activo
+    )
+
+
 
 
 @proveedores_bp.route('/nuevo', methods=['GET', 'POST'])
@@ -49,7 +70,7 @@ def nuevo():
             db.session.add(proveedor)
             db.session.commit()
             flash("Proveedor creado correctamente.", "success")
-            return redirect(url_for('proveedores.index'))
+            return redirect(url_for('proveedores.lista'))
         except IntegrityError:
             db.session.rollback()
             flash("Ya existe un proveedor con ese nombre.", "danger")
@@ -90,7 +111,7 @@ def editar(proveedor_id):
         try:
             db.session.commit()
             flash("Proveedor actualizado correctamente.", "success")
-            return redirect(url_for('proveedores.index'))
+            return redirect(url_for('proveedores.lista'))
         except IntegrityError:
             db.session.rollback()
             flash("Ya existe un proveedor con ese nombre.", "danger")
@@ -106,7 +127,7 @@ def eliminar(proveedor_id):
     proveedor.activo = False
     db.session.commit()
     flash("Proveedor desactivado correctamente.", "warning")
-    return redirect(url_for('proveedores.index'))
+    return redirect(url_for('proveedores.lista'))
 
 
 @proveedores_bp.route("/reactivar/<int:proveedor_id>", methods=["POST"])
@@ -116,4 +137,4 @@ def reactivar(proveedor_id):
     proveedor.activo = True
     db.session.commit()
     flash("Proveedor reactivado correctamente.", "success")
-    return redirect(url_for("proveedores.index"))
+    return redirect(url_for("proveedores.lista"))

@@ -19,16 +19,38 @@ productos_bp = Blueprint(
 @productos_bp.route("/")
 def lista():
     q = request.args.get("q", "").strip()
+    categoria_id = request.args.get("categoria", type=int)
+    proveedor_id = request.args.get("proveedor", type=int)
+    activo = request.args.get("activo", "")
+    
 
-    # Traer productos con relaciones activas
     consulta = Producto.query.join(Categoria).join(Proveedor).order_by(Producto.Id.desc())
 
     if q:
         consulta = consulta.filter(Producto.Nombre.ilike(f"%{q}%"))
 
+    if categoria_id:
+        consulta = consulta.filter(Producto.CategoriaId == categoria_id)
+    if proveedor_id:
+        consulta = consulta.filter(Producto.ProveedorId == proveedor_id)
+    if activo in ["0", "1"]:
+        consulta = consulta.filter(Producto.Activo == (activo == "1"))
+
     productos = consulta.all()
 
-    return render_template("productos/lista.html", productos=productos, q=q)
+    categorias = Categoria.query.all()
+    proveedores = Proveedor.query.all()
+
+    return render_template(
+        "productos/lista.html",
+        productos=productos,
+        q=q,
+        categorias=categorias,
+        proveedores=proveedores,
+        categoria_id=categoria_id,
+        proveedor_id=proveedor_id,
+        activo=activo
+    )
 
 
 # ==============================

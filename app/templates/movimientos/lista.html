@@ -3,18 +3,36 @@
 <div class="container mt-4">
   <h2>Movimientos</h2>
 
-  <div class="row mb-3">
-    <div class="col-md-6">
-      <!-- formulario simple GET para búsqueda -->
-      <form method="GET" action="{{ url_for('movimientos.lista') }}" class="d-flex">
-        <input name="q" class="form-control me-2" type="search" placeholder="Buscar por tipo, motivo o notas..." value="{{ q }}">
-        <button class="btn btn-outline-secondary" type="submit">Buscar</button>
-      </form>
+  <!-- 🔍 FILTRO -->
+  <form method="GET" class="row g-3 align-items-end mb-3">
+    <div class="col-md-4">
+      <label for="q" class="form-label">Buscar por producto</label>
+      <input type="text" id="q" name="q" class="form-control" placeholder="Ejemplo: Coca-Cola"
+             value="{{ q }}">
     </div>
-    <div class="col-md-6 text-end">
-      <a href="{{ url_for('movimientos.crear') }}" class="btn btn-primary">Nuevo Movimiento</a>
+
+    <div class="col-md-3">
+      <label for="tipo" class="form-label">Tipo de movimiento</label>
+      <select id="tipo" name="tipo" class="form-select">
+        <option value="">-- Todos --</option>
+        <option value="entrada" {% if tipo == 'entrada' %}selected{% endif %}>Entradas</option>
+        <option value="salida" {% if tipo == 'salida' %}selected{% endif %}>Salidas</option>
+      </select>
     </div>
+
+    <div class="col-md-3 text-end">
+      <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+    </div>
+  </form>
+
+  {% if q or tipo %}
+  <div class="mb-3 text-end">
+    <a href="{{ url_for('movimientos.lista') }}" class="btn btn-secondary btn-sm">Limpiar filtros</a>
   </div>
+  {% endif %}
+
+  <!-- 🆕 BOTÓN NUEVO MOVIMIENTO -->
+  <a href="{{ url_for('movimientos.crear') }}" class="btn btn-success mb-3">Nuevo Movimiento</a>
 
   <table class="table table-striped">
     <thead>

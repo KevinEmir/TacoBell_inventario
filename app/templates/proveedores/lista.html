@@ -5,16 +5,41 @@
 
 {% block content %}
 <div class="container mt-4">
-  <h1>Proveedores</h1>
+  <h2>Proveedores</h2>
 
-  <form method="get" class="mb-3">
-    <div class="input-group">
-      <input type="text" name="q" class="form-control" placeholder="Buscar por nombre..." value="{{ q }}">
-      <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+  <!-- FILTROS -->
+  <form method="GET" class="row g-3 align-items-end mb-3">
+    <div class="col-md-6">
+      <label for="q" class="form-label">Buscar por nombre o empresa</label>
+      <input type="text" id="q" name="q" class="form-control" placeholder="Ejemplo: Alimentos López"
+             value="{{ q }}">
+    </div>
+
+    <div class="col-md-3">
+      <label for="activo" class="form-label">Estado</label>
+      <select id="activo" name="activo" class="form-select">
+        <option value="">-- Todos --</option>
+        <option value="1" {% if activo == '1' %}selected{% endif %}>Activos</option>
+        <option value="0" {% if activo == '0' %}selected{% endif %}>Inactivos</option>
+      </select>
+    </div>
+
+    <div class="col-md-3 text-end">
+      <button type="submit" class="btn btn-primary w-100">Filtrar</button>
     </div>
   </form>
 
-  <a href="{{ url_for('proveedores.nuevo') }}" class="btn btn-primary mb-3">Nuevo proveedor</a>
+  {% if q or activo %}
+  <div class="mb-3 text-end">
+    <a href="{{ url_for('proveedores.lista') }}" class="btn btn-secondary btn-sm">Limpiar filtros</a>
+  </div>
+  {% endif %}
+
+  <!-- 🚀 NUEVO PROVEEDOR -->
+  <div class="mb-3 text-end">
+    <a href="{{ url_for('proveedores.nuevo') }}" class="btn btn-success">Nuevo Proveedor</a>
+  </div>
+
 
   {% if proveedores %}
   <table class="table table-striped">

@@ -7,13 +7,29 @@ categorias_bp = Blueprint("categorias", __name__, template_folder="templates", u
 
 @categorias_bp.route("/", methods=["GET"])
 def lista():
-    q = request.args.get("q", "")
-    if q:
-        categorias = Categoria.query.filter(Categoria.Nombre.ilike(f"%{q}%")).order_by(Categoria.Nombre).all()
-    else:
-        categorias = Categoria.query.order_by(Categoria.Id.asc()).all()
+    q = request.args.get("q", "").strip()
+    activo = request.args.get("activo", "")
 
-    return render_template("categorias/lista.html", categorias=categorias, q=q)
+    # Iniciamos la consulta base
+    consulta = Categoria.query.order_by(Categoria.Id.desc())
+
+    # Filtro por nombre (insensible a mayúsculas)
+    if q:
+        consulta = consulta.filter(Categoria.Nombre.ilike(f"%{q}%"))
+
+    # Filtro por estado
+    if activo in ["0", "1"]:
+        consulta = consulta.filter(Categoria.Activo == (activo == "1"))
+
+    # Ejecutamos la consulta final
+    categorias = consulta.all()
+
+    return render_template(
+        "categorias/lista.html",
+        categorias=categorias,
+        q=q,
+        activo=activo
+    )
 
 @categorias_bp.route("/crear", methods=["GET", "POST"])
 def crear():
